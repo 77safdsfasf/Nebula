@@ -82,37 +82,77 @@ public class InstanceManager extends PlayerManager implements GameDatabaseObject
         settleData.setWin(star > 0);
         settleData.setFirst(settleData.isWin() && !log.containsKey(data.getId()));
         
-        // Init player changes
-        var changes = new PlayerChangeInfo();
+        // Init player change info
+        var change = new PlayerChangeInfo();
         
         // Handle win
         if (settleData.isWin()) {
-            // Energy
+            // Reward type
+            int rewardType = this.getRewardType();
+            
+            // Calculate energy and exp
             settleData.setExp(data.getEnergyConsume());
-            getPlayer().consumeEnergy(settleData.getExp(), changes);
+            getPlayer().consumeEnergy(settleData.getExp(), change);
             
             // Awards
-            getPlayer().getInventory().addItem(GameConstants.EXP_ITEM_ID, settleData.getExp(), changes);
-            getPlayer().getInventory().addItems(data.getRewards(), changes);
+            getPlayer().getInventory().addItem(GameConstants.EXP_ITEM_ID, settleData.getExp(), change);
+            getPlayer().getInventory().addItems(data.getRewards(rewardType), change);
             
             if (settleData.isFirst()) {
-                getPlayer().getInventory().addItems(data.getFirstRewards(), changes);
+                getPlayer().getInventory().addItems(data.getFirstRewards(rewardType), change);
             }
             
             // Log
             this.saveInstanceLog(log, logName, data.getId(), star);
         }
         
-        // Log energy
-        if (data.getEnergyConsume() > 0) {
-            changes.add(this.getPlayer().getEnergyProto());
-        }
-        
         // Set extra data
-        changes.setExtraData(settleData);
+        change.setExtraData(settleData);
         
         // Success
-        return changes.setSuccess(true);
+        return change.setSuccess(true);
+    }
+    
+    public PlayerChangeInfo sweepInstance(InstanceData data, Int2IntMap log, int rewardType, int count) {
+        // Sanity check count
+        if (count <= 0) {
+            return null;
+        }
+        
+        // Check if we have 3 starred this instance
+        int stars = log.get(data.getId());
+        
+        if (rewardType > 0) {
+            // Daily instance
+            if (stars != 7) {
+                return null;
+            }
+        } else {
+            // Other instances
+            if (stars != 3) {
+                return null;
+            }
+        }
+        
+        // Check energy cost
+        int energyCost = data.getEnergyConsume() * count;
+        
+        if (this.getPlayer().getEnergy() < energyCost) {
+            return null;
+        }
+        
+        // Init player change info
+        var change = new PlayerChangeInfo();
+        
+        // Consume exp
+        getPlayer().consumeEnergy(energyCost, change);
+        
+        // Awards
+        getPlayer().getInventory().addItem(GameConstants.EXP_ITEM_ID, energyCost, change);
+        getPlayer().getInventory().addItems(data.getRewards(rewardType).mulitply(count), change);
+        
+        // Success
+        return change.setSuccess(true);
     }
 
     // Proto

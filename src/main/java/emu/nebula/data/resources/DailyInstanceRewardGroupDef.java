@@ -9,7 +9,8 @@ import lombok.Getter;
 @Getter
 @ResourceType(name = "DailyInstanceRewardGroup.json")
 public class DailyInstanceRewardGroupDef extends BaseDef {
-    private int Id;
+    private int GroupId;
+    private int DailyRewardType;
     private String BaseAwardPreview;
     
     private transient ItemParamMap firstRewards;
@@ -17,7 +18,7 @@ public class DailyInstanceRewardGroupDef extends BaseDef {
     
     @Override
     public int getId() {
-        return Id;
+        return GroupId + DailyRewardType;
     }
     
     @Override
