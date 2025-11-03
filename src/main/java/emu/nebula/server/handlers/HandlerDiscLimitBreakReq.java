@@ -32,7 +32,7 @@ public class HandlerDiscLimitBreakReq extends NetHandler {
         // Create response
         var rsp = DiscLimitBreakResp.newInstance()
                 .setStar(disc.getStar())
-                .setChange(null);
+                .setChange(change.toProto());
         
         return session.encodeMsg(NetMsgId.disc_limit_break_succeed_ack, rsp);
     }
