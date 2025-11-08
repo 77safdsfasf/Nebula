@@ -36,7 +36,7 @@ import emu.nebula.proto.Public.Story;
 import emu.nebula.proto.Public.WorldClass;
 import emu.nebula.proto.Public.WorldClassRewardState;
 import emu.nebula.proto.Public.Title;
-
+import emu.nebula.proto.Public.VampireSurvivorLevel;
 import lombok.Getter;
 import us.hebi.quickbuf.ProtoMessage;
 import us.hebi.quickbuf.RepeatedInt;
@@ -620,7 +620,6 @@ public class Player implements GameDatabaseObject {
             proto.addDailyActiveIds(id);
         }
         
-        
         state.getMutableWorldClassReward()
             .setFlag(this.getQuestManager().getLevelRewards().toBigEndianByteArray());
         
@@ -652,10 +651,21 @@ public class Player implements GameDatabaseObject {
             proto.addRglPassedIds(towerData.getId());
         }
         
-        // Extra
-        proto.getMutableVampireSurvivorRecord()
-            .getMutableSeason();
+        // Force unlock all vampire survivor records
+        var vsProto = proto.getMutableVampireSurvivorRecord();
         
+        vsProto.getMutableSeason();
+        
+        for (var vsData : GameData.getVampireSurvivorDataTable()) {
+            var level = VampireSurvivorLevel.newInstance()
+                    .setId(vsData.getId())
+                    .setScore(0)
+                    .setPassed(true);
+            
+            vsProto.addRecords(level);
+        }
+        
+        // Extra
         proto.getMutableAgent();
         proto.getMutablePhone();
         
