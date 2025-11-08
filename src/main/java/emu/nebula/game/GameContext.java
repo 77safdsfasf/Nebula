@@ -1,35 +1,46 @@
 package emu.nebula.game;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import emu.nebula.GameConstants;
+import emu.nebula.Nebula;
 import emu.nebula.game.gacha.GachaModule;
 import emu.nebula.game.player.PlayerModule;
 import emu.nebula.net.GameSession;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+
 import lombok.Getter;
 
 @Getter
-public class GameContext {
+public class GameContext implements Runnable {
     private final Object2ObjectMap<String, GameSession> sessions;
     
     // Modules
     private final PlayerModule playerModule;
     private final GachaModule gachaModule;
     
-    // Cleanup thread
-    private final Timer cleanupTimer;
+    // Game loop
+    private final ScheduledExecutorService scheduler;
+    
+    // Daily
+    private long epochDays;
     
     public GameContext() {
         this.sessions = new Object2ObjectOpenHashMap<>();
         
+        // Setup game modules
         this.playerModule = new PlayerModule(this);
         this.gachaModule = new GachaModule(this);
         
-        this.cleanupTimer = new Timer();
-        this.cleanupTimer.scheduleAtFixedRate(new CleanupTask(this), 0, TimeUnit.SECONDS.toMillis(60));
+        // Run game loop
+        this.scheduler = Executors.newScheduledThreadPool(1);
+        this.scheduler.scheduleAtFixedRate(this, 0, 1, TimeUnit.SECONDS);
     }
     
     public synchronized GameSession getSessionByToken(String token) {
@@ -74,18 +85,41 @@ public class GameContext {
             }
         }
     }
-    
-    @Getter
-    public static class CleanupTask extends TimerTask {
-        private GameContext gameContext;
-        
-        public CleanupTask(GameContext gameContext) {
-            this.gameContext = gameContext;
-        }
 
-        @Override
-        public void run() {
-            this.getGameContext().cleanupInactiveSessions();
+    @Override
+    public void run() {
+        // Check daily - Update epoch days
+        long offset = Nebula.getConfig().getServerOptions().getDailyResetHour() * -3600;
+        var instant = Instant.now().plusSeconds(offset);
+        var date = LocalDate.ofInstant(instant, GameConstants.UTC_ZONE);
+        
+        long lastEpochDays = this.epochDays;
+        this.epochDays = date.toEpochDay();
+        
+        // Check if the day was changed
+        if (this.epochDays > lastEpochDays) {
+            this.resetDailies();
+        }
+        
+        // Clean up any inactive sessions
+        this.cleanupInactiveSessions();
+    }
+
+    /**
+     * Resets the daily missions/etc for all players on the server
+     */
+    public synchronized void resetDailies() {
+        for (var session : this.getSessions().values()) {
+            // Cache
+            var player = session.getPlayer();
+            
+            // Skip if session doesn't have a player
+            if (player == null) {
+                continue;
+            }
+            
+            //
+            player.checkResetDailies();
         }
     }
 }

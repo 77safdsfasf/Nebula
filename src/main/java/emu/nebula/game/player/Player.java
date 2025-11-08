@@ -64,6 +64,7 @@ public class Player implements GameDatabaseObject {
     private int energy;
     private long energyLastUpdate;
    
+    private long lastEpochDay;
     private long createTime;
     
     // Managers
@@ -430,6 +431,27 @@ public class Player implements GameDatabaseObject {
         // Empty
     }
     
+    // Dailies
+    
+    public void checkResetDailies() {
+        // Sanity check to make sure daily reset isnt being triggered wrong
+        if (Nebula.getGameContext().getEpochDays() <= this.getLastEpochDay()) {
+            return;
+        }
+        
+        // Reset dailies
+        this.resetDailies();
+        
+        // Update last epoch day
+        this.lastEpochDay = Nebula.getGameContext().getEpochDays();
+        Nebula.getGameDatabase().update(this, this.getUid(), "lastEpochDay", this.lastEpochDay);
+    }
+
+    public void resetDailies() {
+        // Reset daily quests
+        this.getQuestManager().resetDailyQuests();
+    }
+    
     // Login
     
     private <T extends PlayerManager> T loadManagerFromDatabase(Class<T> cls) {
@@ -471,6 +493,10 @@ public class Player implements GameDatabaseObject {
     }
     
     public void onLogin() {
+        // See if we need to reset dailies
+        this.checkResetDailies();
+        
+        // Trigger quest login
         this.getQuestManager().triggerQuest(QuestCondType.LoginTotal, 1);
     }
     
@@ -644,5 +670,5 @@ public class Player implements GameDatabaseObject {
         
         return proto;
     }
-
+    
 }

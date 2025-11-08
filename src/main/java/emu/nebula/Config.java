@@ -98,6 +98,7 @@ public class Config {
         public boolean autoCreateAccount = true;
         public boolean skipIntro = false;
         public boolean unlockInstances = true;
+        public int dailyResetHour = 0;
     }
     
     @Getter
