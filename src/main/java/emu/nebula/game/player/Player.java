@@ -14,6 +14,7 @@ import emu.nebula.game.account.Account;
 import emu.nebula.game.character.CharacterStorage;
 import emu.nebula.game.formation.FormationManager;
 import emu.nebula.game.gacha.GachaManager;
+import emu.nebula.game.infinitytower.InfinityTowerManager;
 import emu.nebula.game.instance.InstanceManager;
 import emu.nebula.game.inventory.Inventory;
 import emu.nebula.game.mail.Mailbox;
@@ -71,6 +72,7 @@ public class Player implements GameDatabaseObject {
     // Managers
     private final transient CharacterStorage characters;
     private final transient GachaManager gachaManager;
+    private final transient InfinityTowerManager infinityTowerManager;
     private final transient VampireSurvivorManager vampireSurvivorManager;
     private final transient ScoreBossManager scoreBossManager;
     
@@ -91,6 +93,7 @@ public class Player implements GameDatabaseObject {
         // Init player managers
         this.characters = new CharacterStorage(this);
         this.gachaManager = new GachaManager(this);
+        this.infinityTowerManager = new InfinityTowerManager(this);
         this.vampireSurvivorManager = new VampireSurvivorManager(this);
         this.scoreBossManager = new ScoreBossManager(this);
         
