@@ -2,7 +2,6 @@ package emu.nebula.server.handlers;
 
 import emu.nebula.net.NetHandler;
 import emu.nebula.net.NetMsgId;
-import emu.nebula.proto.GachaInformation.GachaInfo;
 import emu.nebula.proto.GachaInformation.GachaInformationResp;
 import emu.nebula.net.HandlerId;
 import emu.nebula.net.GameSession;
@@ -16,16 +15,7 @@ public class HandlerGachaInformationReq extends NetHandler {
         var rsp = GachaInformationResp.newInstance();
         
         for (var bannerInfo : session.getPlayer().getGachaManager().getBannerInfos()) {
-            var info = GachaInfo.newInstance()
-                    .setId(bannerInfo.getBannerId())
-                    .setGachaTotalTimes(bannerInfo.getTotal())
-                    .setTotalTimes(bannerInfo.getTotal())
-                    .setAupMissTimes(bannerInfo.getMissTimesA())
-                    .setAMissTimes(bannerInfo.getMissTimesA())
-                    .setReveFirstTenReward(true)
-                    .setRecvGuaranteeReward(bannerInfo.isUsedGuarantee());
-            
-            rsp.addInformation(info);
+            rsp.addInformation(bannerInfo.toProto());
         }
         
         // Encode and send

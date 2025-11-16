@@ -36,6 +36,10 @@ public class GachaDef extends BaseDef {
     public int getId() {
         return Id;
     }
+
+    public boolean canGuarantee() {
+        return this.GuaranteeTimes > 0;
+    }
     
     public GachaStorageDef getStorageData() {
         return GameData.getGachaStorageDataTable().get(this.getStorageId());

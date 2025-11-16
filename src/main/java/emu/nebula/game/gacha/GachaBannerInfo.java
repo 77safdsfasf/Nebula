@@ -10,6 +10,7 @@ import emu.nebula.data.resources.GachaDef.GachaPackage;
 import emu.nebula.data.resources.GachaPkgDef;
 import emu.nebula.database.GameDatabaseObject;
 import emu.nebula.game.player.Player;
+import emu.nebula.proto.GachaInformation.GachaInfo;
 import emu.nebula.util.Utils;
 import lombok.Getter;
 
@@ -37,6 +38,10 @@ public class GachaBannerInfo implements GameDatabaseObject {
     public GachaBannerInfo(Player player, GachaDef data) {
         this.playerUid = player.getUid();
         this.bannerId = data.getId();
+    }
+    
+    public void setUsedGuarantee(boolean value) {
+        this.usedGuarantee = value;
     }
     
     public int doPull(GachaDef data) {
@@ -97,5 +102,20 @@ public class GachaBannerInfo implements GameDatabaseObject {
         
         // Get random id
         return pkg.next();
+    }
+    
+    // Proto
+
+    public GachaInfo toProto() {
+        var proto = GachaInfo.newInstance()
+                .setId(this.getBannerId())
+                .setGachaTotalTimes(this.getTotal())
+                .setTotalTimes(this.getTotal())
+                .setAupMissTimes(this.getMissTimesA())
+                .setAMissTimes(this.getMissTimesA())
+                .setReveFirstTenReward(true)
+                .setRecvGuaranteeReward(this.isUsedGuarantee());
+        
+        return proto;
     }
 }
