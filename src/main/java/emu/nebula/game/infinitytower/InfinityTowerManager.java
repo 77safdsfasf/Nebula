@@ -58,13 +58,18 @@ public class InfinityTowerManager extends PlayerManager {
             return change;
         }
         
+        // Check logs if the player has completed the level already
+        if (this.getPlayer().getProgress().getInfinityArenaLog().containsKey(this.getLevelId())) {
+            return change;
+        }
+        
         // Calculate rewards
         var rewards = this.getLevelData().generateRewards();
         
-        // Add items
+        // Add items to player
         this.getPlayer().getInventory().addItems(rewards, change);
         
-        // Set in change info
+        // Set rewards in change info
         change.setExtraData(rewards);
         
         // Log in player progress
