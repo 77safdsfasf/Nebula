@@ -52,6 +52,8 @@ public class GameData {
     @Getter private static DataTable<DiscPromoteDef> DiscPromoteDataTable = new DataTable<>();
     @Getter private static DataTable<DiscPromoteLimitDef> DiscPromoteLimitDataTable = new DataTable<>();
     
+    @Getter private static DataTable<SecondarySkillDef> SecondarySkillDataTable = new DataTable<>();
+    
     // Items
     @Getter private static DataTable<ItemDef> ItemDataTable = new DataTable<>();
     @Getter private static DataTable<ProductionDef> ProductionDataTable = new DataTable<>();
