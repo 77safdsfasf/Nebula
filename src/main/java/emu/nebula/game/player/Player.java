@@ -627,6 +627,12 @@ public class Player implements GameDatabaseObject {
         // Trigger quest/achievement login
         this.trigger(QuestCondition.LoginTotal, 1);
         
+        // Add weekly boss entry item
+        int entries = this.getInventory().getResourceCount(GameConstants.WEEKLY_ENTRY_ITEM_ID);
+        if (entries < 3) {
+            this.getInventory().addItem(GameConstants.WEEKLY_ENTRY_ITEM_ID, 3 - entries);
+        }
+        
         // Update last epoch day
         this.lastEpochDay = Nebula.getGameContext().getEpochDays();
         Nebula.getGameDatabase().update(this, this.getUid(), "lastEpochDay", this.lastEpochDay);
@@ -718,6 +724,11 @@ public class Player implements GameDatabaseObject {
         
         // Load complete
         this.loaded = true;
+    }
+
+    public void onCreate() {
+        // Send welcome mail
+        this.getMailbox().sendWelcomeMail();
     }
     
     public void onLogin() {

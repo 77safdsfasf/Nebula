@@ -132,12 +132,13 @@ public class PlayerModule extends GameContextModule {
         player.onLoad();
         player.save();
         
-        // Send welcome mail
-        player.getMailbox().sendWelcomeMail();
+        // Handle any player creation events
+        player.onCreate();
         
         // Put in player cache
         this.addToCache(player);
 
+        // Complete
         return player;
     }
     
