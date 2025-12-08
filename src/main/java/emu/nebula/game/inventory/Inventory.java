@@ -377,12 +377,23 @@ public class Inventory extends PlayerManager implements GameDatabaseObject {
                 }
             }
             case Disc -> {
-                if (amount <= 0) {
+                // Cannot remove discs
+                if (amount <= 0) break;
+                
+                // Get disc data
+                var discData = GameData.getDiscDataTable().get(id);
+                if (discData == null) break;
+                
+                // Add transform item instead if we already have this disc
+                if (getPlayer().getCharacters().hasDisc(id)) {
+                    this.addItem(discData.getTransformItemId(), amount, change);
                     break;
                 }
                 
-                var disc = getPlayer().getCharacters().addDisc(id);
+                // Add disc
+                var disc = getPlayer().getCharacters().addDisc(discData);
                 
+                // Add to change info
                 if (disc != null) {
                     change.add(disc.toProto());
                 } else {
@@ -390,12 +401,23 @@ public class Inventory extends PlayerManager implements GameDatabaseObject {
                 }
             }
             case Char -> {
-                if (amount <= 0) {
+                // Cannot remove characters
+                if (amount <= 0) break;
+                
+                // Get character data
+                var charData = GameData.getCharacterDataTable().get(id);
+                if (charData == null) break;
+                
+                // Add transform item instead if we already have this character
+                if (getPlayer().getCharacters().hasCharacter(id)) {
+                    this.addItem(charData.getFragmentsId(), charData.getTransformQty(), change);
                     break;
                 }
                 
-                var character = getPlayer().getCharacters().addCharacter(id);
-
+                // Add character
+                var character = getPlayer().getCharacters().addCharacter(charData);
+                
+                // Add to change info
                 if (character != null) {
                     change.add(character.toProto());
                 } else {
