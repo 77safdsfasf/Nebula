@@ -37,6 +37,9 @@ public class StoryManager extends PlayerManager implements GameDatabaseObject {
     // Note: Story options are seperate from regular story ids to save database space, since most stories do not have options
     private Map<Integer, StoryOptionLog> options;
     
+    // Current story
+    private transient int storyId;
+    
     @Deprecated // Morphia only
     public StoryManager() {
         
@@ -51,6 +54,10 @@ public class StoryManager extends PlayerManager implements GameDatabaseObject {
         this.options = new HashMap<>();
         
         this.save();
+    }
+    
+    public void apply(int idx) {
+        this.storyId = idx;
     }
     
     public boolean hasNew() {
@@ -110,6 +117,9 @@ public class StoryManager extends PlayerManager implements GameDatabaseObject {
             // Save to db
             Nebula.getGameDatabase().addToSet(this, this.getPlayerUid(), "evidences", id);
         }
+        
+        // Clear current story
+        this.storyId = 0;
         
         // Complete
         return change;

@@ -13,7 +13,6 @@ import lombok.Getter;
 public class InfinityTowerManager extends PlayerManager {
     private InfinityTowerLevelDef levelData;
     private int levelId;
-    
     private long buildId;
     
     public InfinityTowerManager(Player player) {
@@ -78,6 +77,10 @@ public class InfinityTowerManager extends PlayerManager {
         
         // Trigger achievement
         this.getPlayer().trigger(AchievementCondition.InfinityTowerClearSpecificFloor, 10, this.getLevelId(), 0);
+        
+        // Clear instance
+        this.levelId = 0;
+        this.buildId = 0;
         
         // Success
         return change.setSuccess(true);
