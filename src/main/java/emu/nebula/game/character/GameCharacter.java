@@ -675,7 +675,11 @@ public class GameCharacter implements GameDatabaseObject {
         
         // Get gem data
         var gemData = this.getData().getCharGemData(slotId);
-        var gemControl = gemData.getControlData();
+        var gemControl = GameData.getCharGemSlotControlDataTable().get(slotId);
+        
+        if (gemControl == null) {
+            throw new ServerException(110105, "Emblem slot data doesn't exist");
+        }
         
         // Check character level
         if (this.getLevel() < gemControl.getUnlockLevel()) {
@@ -717,7 +721,11 @@ public class GameCharacter implements GameDatabaseObject {
         
         // Get gem data
         var gemData = this.getData().getCharGemData(slotId);
-        var gemControl = gemData.getControlData();
+        var gemControl = GameData.getCharGemSlotControlDataTable().get(slotId);
+        
+        if (gemControl == null) {
+            throw new ServerException(110105, "Emblem slot data doesn't exist");
+        }
         
         // Check character level
         if (this.getLevel() < gemControl.getUnlockLevel()) {

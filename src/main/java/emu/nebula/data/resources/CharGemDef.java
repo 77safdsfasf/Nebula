@@ -1,7 +1,6 @@
 package emu.nebula.data.resources;
 
 import emu.nebula.data.BaseDef;
-import emu.nebula.data.GameData;
 import emu.nebula.data.ResourceType;
 import lombok.Getter;
 
@@ -16,9 +15,5 @@ public class CharGemDef extends BaseDef {
     @Override
     public int getId() {
         return Id;
-    }
-    
-    public CharGemSlotControlDef getControlData() {
-        return GameData.getCharGemSlotControlDataTable().get(this.Type);
     }
 }

@@ -1,6 +1,5 @@
 package emu.nebula.data.resources;
 
-import java.util.Arrays;
 import java.util.List;
 
 import emu.nebula.data.BaseDef;
@@ -62,8 +61,5 @@ public class CharacterDef extends BaseDef {
     public void onLoad() {
         this.elementType = ElementType.getByValue(this.EET);
         this.chats = new ObjectArrayList<>();
-        
-        // Sort gem slots
-        this.GemSlots = Arrays.stream(this.GemSlots).sorted().toArray();
     }
 }

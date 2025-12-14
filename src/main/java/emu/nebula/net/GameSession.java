@@ -209,7 +209,8 @@ public class GameSession {
             // Send mail state notify
             this.getPlayer().addNextPackage(
                     NetMsgId.mail_state_notify,
-                    MailState.newInstance().setNew(true));
+                    MailState.newInstance().setNew(true)
+            );
         }
 
         // Check handbook states
